@@ -245,33 +245,74 @@ alert("Gráfico ainda não carregado")
 return
 }
 
-// salva tamanho atual
-const canvas = chart.canvas
-const originalWidth = canvas.width
-const originalHeight = canvas.height
+const chartCanvas = chart.canvas
 
-// define resolução estilo desktop
-canvas.width = 2400
-canvas.height = 2000
+// criar canvas grande para exportação
+const exportCanvas = document.createElement("canvas")
+const width = 1600
+const height = 1000
 
-chart.resize()
+exportCanvas.width = width
+exportCanvas.height = height
 
-chart.update()
+const ctx = exportCanvas.getContext("2d")
 
-// exporta imagem
-const link = document.createElement("a")
+// fundo branco
+ctx.fillStyle = "#ffffff"
+ctx.fillRect(0,0,width,height)
 
-link.href = chart.toBase64Image("image/png",1)
-link.download = "streams_chart_hd.png"
+// título
+ctx.fillStyle = "#0b5ed7"
+ctx.font = "bold 48px Arial"
+ctx.fillText("Spotify Streams Tracker",80,80)
+
+// subtítulo
+ctx.fillStyle = "#333"
+ctx.font = "28px Arial"
+ctx.fillText("Caprichoso: Brinquedo que Canta Seu Chão",80,130)
+
+// período selecionado
+let start=document.getElementById('startDate').value
+let end=document.getElementById('endDate').value
+
+let periodText="Período: "
+
+if(start) periodText+=formatBR(start)
+else periodText+="início"
+
+periodText+=" — "
+
+if(end) periodText+=formatBR(end)
+else periodText+="hoje"
+
+ctx.font="24px Arial"
+ctx.fillText(periodText,80,180)
+
+// total de streams
+const total=Object.values(dataStore).reduce((a,b)=>a+b,0)
+
+ctx.fillText(
+"Total de Streams: "+total.toLocaleString(),
+80,
+220
+)
+
+// desenhar gráfico grande
+ctx.drawImage(
+chartCanvas,
+80,
+260,
+1440,
+640
+)
+
+// exportar
+const link=document.createElement("a")
+
+link.href=exportCanvas.toDataURL("image/png")
+link.download="streams_report.png"
 
 link.click()
-
-// volta para tamanho original
-canvas.width = originalWidth
-canvas.height = originalHeight
-
-chart.resize()
-chart.update()
 
 }
 
