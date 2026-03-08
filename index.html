@@ -101,9 +101,11 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 </a>
 </p>
 
-<p style="margin-top:5px;font-size:14px;color:#666">
-👥 Visitantes do site: <span id="visitorCount">...</span>
-</p>
+<div class="card">
+  <h3>👥 Visitantes</h3>
+  <p>Total: <span id="visitorCount">0</span></p>
+  <div id="visitorFlags" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+</div>
   
 <div class="metrics">
 
@@ -746,9 +748,46 @@ document.getElementById("visitorCount").innerText = data.data.up_count
 
 }
 
+// Bandeirinhas de países visitados
+const visitorFlagsEl = document.getElementById("visitorFlags")
+let visitorsByCountry = JSON.parse(localStorage.getItem("visitorsByCountry") || "{}")
+
+function addVisitorFlag(){
+    fetch("https://ipinfo.io/json?token=01f2980e69fbf4")  // substitua SEU_TOKEN pelo token IPinfo
+    .then(res => res.json())
+    .then(data => {
+        const countryCode = data.country
+        if(!visitorsByCountry[countryCode]){
+            visitorsByCountry[countryCode] = 1
+            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
+            renderFlags()
+        } else {
+            visitorsByCountry[countryCode]++
+            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
+        }
+    })
+    .catch(err => console.log("Erro geolocalização:", err))
+}
+
+// Renderiza bandeirinhas
+function renderFlags(){
+    visitorFlagsEl.innerHTML = ""
+    for(const code in visitorsByCountry){
+        const count = visitorsByCountry[code]
+        const img = document.createElement("img")
+        img.src = `https://flagcdn.com/32x24/${code.toLowerCase()}.png`
+        img.title = `${code} (${count} visitantes)`
+        img.width = 32
+        img.height = 24
+        visitorFlagsEl.appendChild(img)
+    }
+}
+
 preloadData()
 setDefaultDates()
 updateVisitorCounter()
+addVisitorFlag()
+renderFlags()
 updateDashboard()
 
 </script>
