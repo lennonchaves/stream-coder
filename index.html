@@ -747,7 +747,7 @@ document.getElementById("visitorCount").innerText = data.data.up_count
 
 }
 
-//Bandeirinhas de países visitados
+// Bandeirinhas de países visitados
 const visitorFlagsEl = document.getElementById("visitorFlags")
 let visitorsByCountry = JSON.parse(localStorage.getItem("visitorsByCountry") || "{}")
 
@@ -768,7 +768,7 @@ function addVisitorFlag(){
     .catch(err => console.log("Erro geolocalização:", err))
 }
 
- Renderiza bandeirinhas
+// Renderiza bandeirinhas
 function renderFlags(){
     visitorFlagsEl.innerHTML = ""
     for(const code in visitorsByCountry){
@@ -788,6 +788,7 @@ updateVisitorCounter()
 addVisitorFlag()
 renderFlags()
 updateDashboard()
+
 </script>
 
 </body>
