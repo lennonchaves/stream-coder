@@ -231,6 +231,21 @@ if(end) entries=entries.filter(d=>d[0]<=end)
 return entries
 }
 
+function exportChartPNG(){
+
+if(!chart){
+alert("Gráfico ainda não carregado")
+return
+}
+
+const link=document.createElement('a')
+
+link.href=chart.toBase64Image()
+link.download="streams_chart.png"
+
+link.click()
+
+}
 
 function updateDashboard(){
 
@@ -529,22 +544,6 @@ const key=format(d)
 if(!dataStore[key]) dataStore[key]=v
 
 })
-
-}
-
-function exportChartPNG(){
-
-if(!chart){
-alert("Gráfico ainda não carregado")
-return
-}
-
-const link=document.createElement('a')
-
-link.href=chart.toBase64Image()
-link.download="streams_chart.png"
-
-link.click()
 
 }
 
