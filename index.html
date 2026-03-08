@@ -169,12 +169,16 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <div class="card">
 <h3>📈 Streams por dia</h3>
 <canvas id="dailyChart"></canvas>
+<br>
+<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
 </div>
 
 
 <div class="card">
 <h3>📊 Streams acumulados</h3>
 <canvas id="cumulativeChart"></canvas>
+<br>
+<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
 </div>
 
 
@@ -182,6 +186,8 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <h3>📅 Comparação semanal</h3>
 <div class="legend" id="weekLegend"></div>
 <canvas id="weeklyChart"></canvas>
+<br>
+<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
 </div>
 
 </div>
@@ -523,6 +529,22 @@ const key=format(d)
 if(!dataStore[key]) dataStore[key]=v
 
 })
+
+}
+
+function exportChartPNG(){
+
+if(!chart){
+alert("Gráfico ainda não carregado")
+return
+}
+
+const link=document.createElement('a')
+
+link.href=chart.toBase64Image()
+link.download="streams_chart.png"
+
+link.click()
 
 }
 
