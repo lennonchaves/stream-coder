@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Streams Tracker</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
@@ -129,6 +130,7 @@ margin-top:4px
 
 
 <div class="card">
+
 <h3>Tabela diária</h3>
 
 <table id="dataTable">
@@ -145,9 +147,7 @@ margin-top:4px
 </table>
 
 <div style="margin-top:10px">
-<button onclick="exportTable()">📋 Copiar Tabela</button>
-<button onclick="shareWhats()">📲 Enviar Tabela no WhatsApp</button>
-<button onclick="shareSummary()">📊 Enviar Resumo no WhatsApp</button>
+<button onclick="copyReport()">📋 Copiar relatório (tabela + métricas)</button>
 </div>
 
 </div>
@@ -186,6 +186,7 @@ return d+'/'+m
 
 
 function addData(){
+
 const date=document.getElementById('dateInput').value
 const streams=parseInt(document.getElementById('streamsInput').value)
 
@@ -262,25 +263,18 @@ updateWeekly(rows)
 }
 
 
-
 let dailyChart,cumulativeChart,weeklyChart
 
 
 function chartOptions(){
-
 return {
-
 responsive:true,
-
 plugins:{
 legend:{display:false},
 datalabels:{anchor:'end',align:'top',formatter:(v)=>v.toLocaleString()}
 }
-
 }
-
 }
-
 
 
 function updateCharts(rows){
@@ -309,6 +303,29 @@ options:chartOptions()
 }
 
 
+function getWeekStart(date){
+
+const [y,m,d]=date.split('-').map(Number)
+
+const base=new Date(y,m-1,d)
+
+const day=base.getDay()||7
+
+if(day!==1) base.setDate(base.getDate()-(day-1))
+
+return new Date(base.getFullYear(),base.getMonth(),base.getDate())
+}
+
+
+function format(d){
+
+const y=d.getFullYear()
+const m=String(d.getMonth()+1).padStart(2,'0')
+const day=String(d.getDate()).padStart(2,'0')
+
+return `${y}-${m}-${day}`
+}
+
 
 function updateWeekly(rows){
 
@@ -316,15 +333,12 @@ let weeks={}
 
 rows.forEach(([date,streams])=>{
 
-const d=new Date(date)
-
-const start=new Date(d)
-start.setDate(d.getDate()-d.getDay()+1)
+const start=getWeekStart(date)
 
 const end=new Date(start)
 end.setDate(start.getDate()+6)
 
-const key=start.toISOString().slice(0,10)+'_'+end.toISOString().slice(0,10)
+const key=format(start)+'_'+format(end)
 
 if(!weeks[key])weeks[key]=0
 
@@ -348,17 +362,14 @@ values.push(v)
 if(weeklyChart)weeklyChart.destroy()
 
 weeklyChart=new Chart(document.getElementById('weeklyChart'),{
-
 type:'bar',
-
 data:{labels:labels,datasets:[{data:values}]},
-
 options:chartOptions()
-
 })
 
+document.getElementById('weekLegend').innerText=
+'Cada barra representa o total de streams dentro do período semanal exibido.'
 }
-
 
 
 function updateMetrics(rows){
@@ -389,23 +400,51 @@ if(g>maxGrowth)maxGrowth=g
 
 document.getElementById('total').innerText=total.toLocaleString()
 
-document.getElementById('bestDay').innerText=best.toLocaleString()+' ('+formatBR(bestDate)+')'
+document.getElementById('bestDay').innerText=
+best.toLocaleString()+' ('+formatBR(bestDate)+')'
 
-document.getElementById('worstDay').innerText=worst.toLocaleString()+' ('+formatBR(worstDate)+')'
+document.getElementById('worstDay').innerText=
+worst.toLocaleString()+' ('+formatBR(worstDate)+')'
 
 document.getElementById('growth').innerText=maxGrowth.toFixed(2)+'%'
 
 document.getElementById('avg').innerText=avg.toLocaleString()
-
 }
 
 
-
-function generateTableText(){
+function copyReport(){
 
 const rows=getFiltered()
 
-let text="📊 STREAMS DIÁRIOS\n\n"
+if(rows.length===0)return
+
+const values=rows.map(r=>r[1])
+
+const total=values.reduce((a,b)=>a+b,0)
+const avg=Math.round(total/values.length)
+
+const best=Math.max(...values)
+const worst=Math.min(...values)
+
+let bestDate=rows.find(r=>r[1]===best)[0]
+let worstDate=rows.find(r=>r[1]===worst)[0]
+
+let maxGrowth=0
+
+for(let i=1;i<values.length;i++){
+let g=(values[i]-values[i-1])/values[i-1]*100
+if(g>maxGrowth)maxGrowth=g
+}
+
+let text="📊 RELATÓRIO DE STREAMS\n\n"
+
+text+=`Total: ${total.toLocaleString()}\n`
+text+=`Média diária: ${avg.toLocaleString()}\n`
+text+=`Maior crescimento: ${maxGrowth.toFixed(2)}%\n`
+text+=`Melhor dia: ${best.toLocaleString()} (${formatBR(bestDate)})\n`
+text+=`Pior dia: ${worst.toLocaleString()} (${formatBR(worstDate)})\n\n`
+
+text+="📅 TABELA DIÁRIA\n\n"
 
 let prev=null
 
@@ -415,13 +454,9 @@ let arrow='—'
 let pct='—'
 
 if(prev!==null){
-
 let diff=streams-prev
-
 arrow= diff>0?'⬆️': diff<0?'⬇️':'➡️'
-
 pct=((diff/prev)*100).toFixed(2)+'%'
-
 }
 
 text+=`${formatBR(date)} | ${streams.toLocaleString()} | ${arrow} | ${pct}\n`
@@ -430,96 +465,31 @@ prev=streams
 
 })
 
-return text
-
-}
-
-
-
-function exportTable(){
-
-const text=generateTableText()
-
 navigator.clipboard.writeText(text)
 
-alert("Tabela copiada!")
-
+alert("Relatório copiado!")
 }
-
-
-
-function shareWhats(){
-
-const text=generateTableText()
-
-window.open("https://wa.me/?text="+encodeURIComponent(text))
-
-}
-
-
-
-function shareSummary(){
-
-const rows=getFiltered()
-
-if(rows.length===0)return
-
-const values=rows.map(r=>r[1])
-
-const total=values.reduce((a,b)=>a+b,0)
-
-const avg=Math.round(total/values.length)
-
-const best=Math.max(...values)
-const worst=Math.min(...values)
-
-let bestDate=rows.find(r=>r[1]===best)[0]
-let worstDate=rows.find(r=>r[1]===worst)[0]
-
-let text=`📊 RESUMO DE STREAMS
-
-Total: ${total.toLocaleString()}
-Média diária: ${avg.toLocaleString()}
-
-🏆 Melhor dia
-${best.toLocaleString()} (${formatBR(bestDate)})
-
-📉 Pior dia
-${worst.toLocaleString()} (${formatBR(worstDate)})
-`
-
-window.open("https://wa.me/?text="+encodeURIComponent(text))
-
-}
-
 
 
 function setDefaultDates(){
 
 const today=new Date()
-
 const firstDay=new Date(today.getFullYear(),today.getMonth(),1)
 
 const formatDate=(d)=>{
 
 const y=d.getFullYear()
-
 const m=String(d.getMonth()+1).padStart(2,'0')
-
 const day=String(d.getDate()).padStart(2,'0')
 
 return `${y}-${m}-${day}`
-
 }
 
 document.getElementById('startDate').value=formatDate(firstDay)
-
 document.getElementById('endDate').value=formatDate(today)
-
 document.getElementById('dateInput').value=formatDate(today)
 
 }
-
 
 
 function preloadData(){
@@ -527,7 +497,6 @@ function preloadData(){
 const today=new Date()
 
 const year=today.getFullYear()
-
 const month=today.getMonth()
 
 const base=[17251,38023,27470,21084,20079,21019]
@@ -536,7 +505,7 @@ base.forEach((v,i)=>{
 
 const d=new Date(year,month,i+1)
 
-const key=d.toISOString().slice(0,10)
+const key=format(d)
 
 if(!dataStore[key]) dataStore[key]=v
 
