@@ -616,9 +616,19 @@ if(!dataStore[key]) dataStore[key]=v
 
 }
 
+function saveData(){
+
+localStorage.setItem(
+"streamsData",
+JSON.stringify(dataStore)
+)
+
+}
+
 setDefaultDates()
 preloadData()
 updateDashboard()
+saveData()
 
 </script>
 
