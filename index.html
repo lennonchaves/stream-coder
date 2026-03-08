@@ -202,7 +202,7 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 
 <script>
 
-let dataStore={}
+let dataStore = JSON.parse(localStorage.getItem("streamsData")) || {}
 Chart.register(ChartDataLabels)
 
 function formatBR(date){
@@ -219,6 +219,8 @@ const streams=parseInt(document.getElementById('streamsInput').value)
 if(!date||!streams)return
 
 dataStore[date]=streams
+
+saveData()
 
 updateDashboard()
 }
@@ -597,23 +599,26 @@ document.getElementById('dateInput').value=formatDate(today)
 
 function preloadData(){
 
-const today=new Date()
-
-const year=today.getFullYear()
-const month=today.getMonth()
+// se já houver dados salvos, não sobrescreve
+if(Object.keys(dataStore).length>0) return
 
 const base=[17251,38023,27470,21084,20079,21019]
 
-base.forEach((v,i)=>{
+const startDate=new Date("2026-03-01")
 
-const d=new Date(year,month,i+1)
+base.forEach((value,index)=>{
+
+let d=new Date(startDate)
+
+d.setDate(startDate.getDate()+index)
 
 const key=format(d)
 
-if(!dataStore[key]) dataStore[key]=v
+dataStore[key]=value
 
 })
 
+saveData()
 }
 
 function saveData(){
@@ -625,10 +630,9 @@ JSON.stringify(dataStore)
 
 }
 
-setDefaultDates()
 preloadData()
+setDefaultDates()
 updateDashboard()
-saveData()
 
 </script>
 
