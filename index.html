@@ -734,114 +734,60 @@ alert("Relatório de toadas copiado!")
 
 }
 
-//function updateVisitorCounter(){
-//fetch(`https://api.counterapi.dev/v2/lennons-team-3198/first-counter-3198/up`)
+function updateVisitorCounter(){
+fetch(`https://api.counterapi.dev/v2/lennons-team-3198/first-counter-3198/up`)
   
-//fetch(`https://api.counterapi.dev/v2/lennons-team-3198/first-counter-3198`)
-//.then(res => res.json())
-//.then(data => {
+fetch(`https://api.counterapi.dev/v2/lennons-team-3198/first-counter-3198`)
+.then(res => res.json())
+.then(data => {
 
-//document.getElementById("visitorCount").innerText = data.data.up_count
+document.getElementById("visitorCount").innerText = data.data.up_count
 
-//})
+})
 
-//}
+}
 
-// Bandeirinhas de países visitados
-//const visitorFlagsEl = document.getElementById("visitorFlags")
-//let visitorsByCountry = JSON.parse(localStorage.getItem("visitorsByCountry") || "{}")
+//Bandeirinhas de países visitados
+const visitorFlagsEl = document.getElementById("visitorFlags")
+let visitorsByCountry = JSON.parse(localStorage.getItem("visitorsByCountry") || "{}")
 
-//function addVisitorFlag(){
-//    fetch("https://ipinfo.io/json?token=01f2980e69fbf4")  // substitua SEU_TOKEN pelo token IPinfo
-//    .then(res => res.json())
-//    .then(data => {
-//        const countryCode = data.country
-//        if(!visitorsByCountry[countryCode]){
-//            visitorsByCountry[countryCode] = 1
-//            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
-//            renderFlags()
-//        } else {
-//            visitorsByCountry[countryCode]++
-//            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
-//        }
-//    })
-//    .catch(err => console.log("Erro geolocalização:", err))
-//}
-
-// Renderiza bandeirinhas
-//function renderFlags(){
-//    visitorFlagsEl.innerHTML = ""
-//    for(const code in visitorsByCountry){
-//        const count = visitorsByCountry[code]
-//        const img = document.createElement("img")
-//        img.src = `https://flagcdn.com/32x24/${code.toLowerCase()}.png`
-//        img.title = `${code} (${count} visitantes)`
-//        img.width = 32
-//        img.height = 24
-//        visitorFlagsEl.appendChild(img)
-//    }
-//}
-
-/* ===== JSONBin Config ===== */
-const BIN_ID = "69ade179d0ea881f40fd920e";
-const BIN_KEY = "$2a$10$BbVSQMmnWYIFceFFxNtgs.6e1IS3ezVhzRsJA342Dc/PYdTFgMk1m";
-const IPINFO_TOKEN = "01f2980e69fbf4";
-
-/* ====================== VISITANTES ====================== */
-async function loadVisitors(){
-  try{
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-      headers:{ "X-Master-Key": BIN_KEY }
-    });
-    const data = await res.json();
-    let countries = data.record.countries || [];
-    let visitorCount = data.record.visitorCount || 0;
-    document.getElementById("visitorCount").innerText = visitorCount;
-    renderFlags(countries);
-
-    // Adicionar país do visitante
-    fetch(`https://ipinfo.io/json?token=${IPINFO_TOKEN}`)
-      .then(r=>r.json())
-      .then(user => {
-        const code = user.country;
-        if(!countries.includes(code)){
-          countries.push(code);
-          visitorCount++;
-          // Atualizar JSONBin
-          fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-            method:"PUT",
-            headers:{
-              "Content-Type":"application/json",
-              "X-Master-Key": BIN_KEY
-            },
-            body: JSON.stringify({countries, visitorCount})
-          })
-          .then(()=> {
-            document.getElementById("visitorCount").innerText = visitorCount;
-            renderFlags(countries);
-          });
+function addVisitorFlag(){
+    fetch("https://ipinfo.io/json?token=01f2980e69fbf4")  // substitua SEU_TOKEN pelo token IPinfo
+    .then(res => res.json())
+    .then(data => {
+        const countryCode = data.country
+        if(!visitorsByCountry[countryCode]){
+            visitorsByCountry[countryCode] = 1
+            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
+            renderFlags()
+        } else {
+            visitorsByCountry[countryCode]++
+            localStorage.setItem("visitorsByCountry", JSON.stringify(visitorsByCountry))
         }
-      });
-  }catch(e){console.error(e);}
+    })
+    .catch(err => console.log("Erro geolocalização:", err))
 }
 
-function renderFlags(arr){
-  const flagsDiv = document.getElementById("visitorFlags");
-  flagsDiv.innerHTML = "";
-  arr.forEach(c => {
-    const img = document.createElement("img");
-    img.src = `https://flagcdn.com/16x12/${c.toLowerCase()}.png`;
-    img.title = c;
-    flagsDiv.appendChild(img);
-  });
+ Renderiza bandeirinhas
+function renderFlags(){
+    visitorFlagsEl.innerHTML = ""
+    for(const code in visitorsByCountry){
+        const count = visitorsByCountry[code]
+        const img = document.createElement("img")
+        img.src = `https://flagcdn.com/32x24/${code.toLowerCase()}.png`
+        img.title = `${code} (${count} visitantes)`
+        img.width = 32
+        img.height = 24
+        visitorFlagsEl.appendChild(img)
+    }
 }
+
 preloadData()
 setDefaultDates()
 updateVisitorCounter()
-//addVisitorFlag()
-//renderFlags()
+addVisitorFlag()
+renderFlags()
 updateDashboard()
-loadVisitors();
 </script>
 
 </body>
