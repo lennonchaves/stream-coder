@@ -136,6 +136,8 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <input type="date" id="dateInput">
 <input type="number" id="streamsInput" placeholder="Streams">
 <button onclick="addData()">Adicionar</button>
+
+<button onclick="resetData()">🗑 Resetar dados</button>
 </div>
 
 
@@ -593,6 +595,16 @@ return `${y}-${m}-${day}`
 document.getElementById('startDate').value=formatDate(firstDay)
 document.getElementById('endDate').value=formatDate(today)
 document.getElementById('dateInput').value=formatDate(today)
+
+}
+  
+function resetData(){
+
+if(!confirm("Apagar todos os dados salvos?")) return
+
+localStorage.removeItem("streamsData")
+
+location.reload()
 
 }
 
