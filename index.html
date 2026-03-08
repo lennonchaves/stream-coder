@@ -9,8 +9,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <style>
-body{font-family:Arial;background:#f4f8ff;margin:0;padding:20px;color:#1a2a44}
-.container{max-width:1200px;margin:auto}
+
+*{
+box-sizing:border-box
+}
+
+body{
+font-family:Arial;
+background:#f4f8ff;
+margin:0;
+padding:20px;
+color:#1a2a44
+}
+
+.container{
+max-width:1200px;
+margin:auto
+}
+
 h1{color:#0b5ed7}
 
 .card{
@@ -21,9 +37,11 @@ margin-bottom:20px;
 box-shadow:0 2px 6px rgba(0,0,0,0.08)
 }
 
+/* GRID DAS MÉTRICAS */
+
 .metrics{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:15px;
 margin-bottom:20px
 }
@@ -36,14 +54,25 @@ padding:18px;
 box-shadow:0 4px 10px rgba(0,0,0,0.15)
 }
 
-.metricTitle{font-size:13px;opacity:0.9}
-.metricValue{font-size:24px;font-weight:bold;margin-top:6px}
+.metricTitle{
+font-size:13px;
+opacity:0.9
+}
+
+.metricValue{
+font-size:24px;
+font-weight:bold;
+margin-top:6px
+}
+
+/* INPUTS */
 
 input,button{
-padding:8px;
+padding:10px;
 margin:5px;
 border-radius:6px;
-border:1px solid #ccc
+border:1px solid #ccc;
+font-size:14px
 }
 
 button{
@@ -55,25 +84,95 @@ cursor:pointer
 
 button:hover{opacity:0.9}
 
+/* TABELA */
+
+.tableWrapper{
+overflow-x:auto
+}
+
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:10px
+margin-top:10px;
+min-width:500px
 }
 
 th,td{
 padding:10px;
 border-bottom:1px solid #eee;
-text-align:center
+text-align:center;
+white-space:nowrap
 }
 
 th{background:#eaf1ff}
+
+/* GRÁFICOS */
+
+canvas{
+width:100% !important;
+height:350px !important
+}
 
 .legend{
 font-size:13px;
 color:#666;
 margin-top:4px
 }
+
+/* RESPONSIVO */
+
+@media (max-width:768px){
+
+body{
+padding:12px
+}
+
+h1{
+font-size:22px
+}
+
+h3{
+font-size:16px
+}
+
+.metricValue{
+font-size:20px
+}
+
+/* inputs empilhados */
+
+.card input,
+.card button{
+width:100%;
+margin:6px 0
+}
+
+/* gráficos menores */
+
+canvas{
+height:260px !important
+}
+
+}
+
+/* telas muito pequenas */
+
+@media (max-width:480px){
+
+.metrics{
+grid-template-columns:1fr
+}
+
+.metricBox{
+padding:14px
+}
+
+canvas{
+height:220px !important
+}
+
+}
+
 </style>
 </head>
 
@@ -143,7 +242,8 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <div class="card">
 
 <h3>Tabela diária</h3>
-
+  
+<div class="tableWrapper">
 <table id="dataTable">
 <thead>
 <tr>
@@ -156,6 +256,7 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 </thead>
 <tbody></tbody>
 </table>
+</div>
 
 <div style="margin-top:10px">
 <button onclick="copyReport()">📋 Copiar relatório (tabela + métricas)</button>
