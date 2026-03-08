@@ -136,8 +136,6 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <input type="date" id="dateInput">
 <input type="number" id="streamsInput" placeholder="Streams">
 <button onclick="addData()">Adicionar</button>
-
-<button onclick="resetData()">🗑 Resetar dados</button>
 </div>
 
 
@@ -170,6 +168,8 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 
 <div style="margin-top:10px">
 <button onclick="copyReport()">📋 Copiar relatório (tabela + métricas)</button>
+
+<button onclick="resetData()">🗑 Resetar dados</button>
 </div>
 
 </div>
@@ -616,7 +616,7 @@ if(Object.keys(dataStore).length>0) return
 
 const base=[17251,38023,27470,21084,20079,21019]
 
-const startDate=new Date("2026-03-01")
+const startDate=new Date(2026,2,1)
 
 base.forEach((value,index)=>{
 
