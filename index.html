@@ -93,10 +93,9 @@ let dataStore = {}
 Chart.register(ChartDataLabels)
 
 function formatBR(date){
-const d=new Date(date)
-const day=String(d.getDate()).padStart(2,'0')
-const month=String(d.getMonth()+1).padStart(2,'0')
-return day+'/'+month
+// evita problema de fuso ao usar new Date("YYYY-MM-DD")
+const [y,m,d]=date.split('-')
+return d+'/'+m
 }
 
 function addData(){
@@ -196,13 +195,20 @@ options:chartOptions()
 }
 
 function getWeekStart(date){
-const d=new Date(date)
-const day=d.getDay()||7
-if(day!==1)d.setHours(-24*(day-1))
-return new Date(d.getFullYear(),d.getMonth(),d.getDate())
+// converter manualmente para evitar shift de timezone
+const [y,m,d]=date.split('-').map(Number)
+const base=new Date(y,m-1,d)
+const day=base.getDay()||7
+if(day!==1) base.setDate(base.getDate()-(day-1))
+return new Date(base.getFullYear(),base.getMonth(),base.getDate())
 }
 
-function format(d){return d.toISOString().slice(0,10)}
+function format(d){
+const y=d.getFullYear()
+const m=String(d.getMonth()+1).padStart(2,'0')
+const day=String(d.getDate()).padStart(2,'0')
+return `${y}-${m}-${day}`
+}
 
 function updateWeekly(rows){
 let weeks={}
@@ -269,7 +275,12 @@ document.getElementById('avg').innerText=avg.toLocaleString()
 function setDefaultDates(){
 const today=new Date()
 const firstDay=new Date(today.getFullYear(),today.getMonth(),1)
-const formatDate=(d)=>d.toISOString().split('T')[0]
+const formatDate=(d)=>{
+const y=d.getFullYear()
+const m=String(d.getMonth()+1).padStart(2,'0')
+const day=String(d.getDate()).padStart(2,'0')
+return `${y}-${m}-${day}`
+}
 
 document.getElementById('startDate').value=formatDate(firstDay)
 document.getElementById('endDate').value=formatDate(today)
@@ -285,7 +296,7 @@ const base=[17251,38023,27470,21084,20079,21019]
 
 base.forEach((v,i)=>{
 const d=new Date(year,month,i+1)
-const key=d.toISOString().split('T')[0]
+const key=format(d)
 if(!dataStore[key]) dataStore[key]=v
 })
 }
