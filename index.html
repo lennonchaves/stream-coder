@@ -170,7 +170,7 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <h3>📈 Streams por dia</h3>
 <canvas id="dailyChart"></canvas>
 <br>
-<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
+<button onclick="exportChartPNG(dailyChart)">Salvar gráfico (PNG)</button>
 </div>
 
 
@@ -178,7 +178,7 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <h3>📊 Streams acumulados</h3>
 <canvas id="cumulativeChart"></canvas>
 <br>
-<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
+<button onclick="exportChartPNG(cumulativeChart)">Salvar gráfico (PNG)</button>
 </div>
 
 
@@ -187,7 +187,7 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 <div class="legend" id="weekLegend"></div>
 <canvas id="weeklyChart"></canvas>
 <br>
-<button onclick="exportChartPNG()">Salvar gráfico (PNG)</button>
+<button onclick="exportChartPNG(weeklyChart)">Salvar gráfico (PNG)</button>
 </div>
 
 </div>
@@ -231,7 +231,7 @@ if(end) entries=entries.filter(d=>d[0]<=end)
 return entries
 }
 
-function exportChartPNG(){
+function exportChartPNG(chart){
 
 if(!chart){
 alert("Gráfico ainda não carregado")
@@ -243,7 +243,9 @@ const link=document.createElement('a')
 link.href=chart.toBase64Image()
 link.download="streams_chart.png"
 
+document.body.appendChild(link)
 link.click()
+document.body.removeChild(link)
 
 }
 
