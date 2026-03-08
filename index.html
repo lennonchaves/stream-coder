@@ -238,21 +238,40 @@ if(end) entries=entries.filter(d=>d[0]<=end)
 return entries
 }
 
-function exportChartPNG(chart){
+function exportChartPNG(){
 
 if(!chart){
 alert("Gráfico ainda não carregado")
 return
 }
 
-const link=document.createElement('a')
+// salva tamanho atual
+const canvas = chart.canvas
+const originalWidth = canvas.width
+const originalHeight = canvas.height
 
-link.href=chart.toBase64Image()
-link.download="streams_chart.png"
+// define resolução estilo desktop
+canvas.width = 1600
+canvas.height = 800
 
-document.body.appendChild(link)
+chart.resize()
+
+chart.update()
+
+// exporta imagem
+const link = document.createElement("a")
+
+link.href = chart.toBase64Image("image/png",1)
+link.download = "streams_chart_hd.png"
+
 link.click()
-document.body.removeChild(link)
+
+// volta para tamanho original
+canvas.width = originalWidth
+canvas.height = originalHeight
+
+chart.resize()
+chart.update()
 
 }
 
