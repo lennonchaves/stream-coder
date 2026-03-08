@@ -100,6 +100,10 @@ style="color:#0b5ed7;text-decoration:none;font-weight:bold">
 🎧 Ouvir álbum no Spotify
 </a>
 </p>
+
+<p style="margin-top:5px;font-size:14px;color:#666">
+👥 Visitantes do site: <span id="visitorCount">...</span>
+</p>
   
 <div class="metrics">
 
@@ -729,8 +733,24 @@ alert("Relatório de toadas copiado!")
 
 }
 
+function updateVisitorCounter(){
+
+const namespace = "streams-tracker-caprichoso"
+const key = "visits"
+
+fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("visitorCount").innerText = data.value
+
+})
+
+}
+
 preloadData()
 setDefaultDates()
+updateVisitorCounter()
 updateDashboard()
 
 </script>
