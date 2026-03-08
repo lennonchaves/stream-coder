@@ -740,7 +740,7 @@ fetch(`https://api.counterapi.dev/v2/lennons-team-3198/first-counter-3198`)
 .then(res => res.json())
 .then(data => {
 
-document.getElementById("up_count").innerText = data.value
+document.getElementById("visitorCount").innerText = data.data.up_count
 
 })
 
