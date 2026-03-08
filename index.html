@@ -387,11 +387,13 @@ function updateMetrics(rows){
 
 if(rows.length===0)return
 
+// TOTAL GLOBAL (todos os dados, ignorando filtro)
+const globalValues=Object.values(dataStore)
+const total=globalValues.reduce((a,b)=>a+b,0)
+
+// métricas baseadas no período filtrado
 const values=rows.map(r=>r[1])
-
-const total=values.reduce((a,b)=>a+b,0)
-
-const avg=Math.round(total/values.length)
+const avg=Math.round(values.reduce((a,b)=>a+b,0)/values.length)
 
 let best=Math.max(...values)
 let worst=Math.min(...values)
@@ -402,11 +404,8 @@ let worstDate=rows.find(r=>r[1]===worst)[0]
 let maxGrowth=0
 
 for(let i=1;i<values.length;i++){
-
 let g=(values[i]-values[i-1])/values[i-1]*100
-
 if(g>maxGrowth)maxGrowth=g
-
 }
 
 document.getElementById('total').innerText=total.toLocaleString()
@@ -420,6 +419,7 @@ worst.toLocaleString()+' ('+formatBR(worstDate)+')'
 document.getElementById('growth').innerText=maxGrowth.toFixed(2)+'%'
 
 document.getElementById('avg').innerText=avg.toLocaleString()
+
 }
 
 
