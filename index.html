@@ -718,8 +718,16 @@ JSON.stringify(dataStore)
 
 function copyToadaReport(){
 
-let text="🎵 STREAMS POR TOADA\n\n"
+const rows=getFiltered()
 
+if(rows.length===0)return
+
+const values=rows.map(r=>r[1])
+
+const total=values.reduce((a,b)=>a+b,0)
+
+let text="🎵 STREAMS ALBUM BRINQUEDO QUE CANTA SEU CHÃO\n\n"
+text+=`Total de Streams: ${total.toLocaleString()}\n\n`
 text+="🥇 Brinquedo que canta seu chão — 103798\n"
 text+="🥈 É hoje! — 84739\n"
 text+="🥉 Povo do Norte — 72911\n"
